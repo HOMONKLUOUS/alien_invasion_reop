@@ -79,6 +79,8 @@ class AlienInvation:
             self.bullets.empty()
             self._creat_fleet(
                 )
+            # for levelup
+            self.settings.increase_speed()
     '''
     For each alien with check_edge method in aliens.py file check if they in adge of the screen
     that call the change_fleet_direction which is in this file this method change the settings.fleet_direction
@@ -143,6 +145,8 @@ class AlienInvation:
             self.SpaceShip.center_ship()
             # attention that if we start the game with the keyboeard the mouse will not hide so for that:
             pygame.mouse.set_visible(False)
+            # Reset the game settings.
+            self.settings.initialize_dynamic_setting()
 
 
     def _check_keyup_event(self, events):
@@ -165,9 +169,14 @@ class AlienInvation:
             self._creat_fleet()
             self.SpaceShip.center_ship()
 
+            # Reset the game settings.
+            self.settings.initialize_dynamic_setting()
+
             #make mouse hide
             if self.game_active:
                 pygame.mouse.set_visible(False)
+            else:
+                pygame.mouse.set_visible(True)
 
     def _fire_bullets(self):
         # creat a new bullet and addet to the bullet group

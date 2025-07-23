@@ -129,6 +129,22 @@ class AlienInvation:
         if events.key == pygame.K_SPACE:
             self._fire_bullets()
 
+        '''
+        we hide the mouse on the screen after the first time the player press the start button
+        of course we can fix this with just if condition and will that but just think it be better
+        if the player can start the game and play the game with just using a keyboard
+        '''
+        if events.key == pygame.K_s and not self.game_active:
+            self.state.reset_state()
+            self.game_active = True
+            self.aliens.empty()
+            self.bullets.empty()
+            self._creat_fleet()
+            self.SpaceShip.center_ship()
+            # attention that if we start the game with the keyboeard the mouse will not hide so for that:
+            pygame.mouse.set_visible(False)
+
+
     def _check_keyup_event(self, events):
         if events.key == pygame.K_RIGHT:
             self.SpaceShip.moving_right = False
@@ -148,6 +164,10 @@ class AlienInvation:
 
             self._creat_fleet()
             self.SpaceShip.center_ship()
+
+            #make mouse hide
+            if self.game_active:
+                pygame.mouse.set_visible(False)
 
     def _fire_bullets(self):
         # creat a new bullet and addet to the bullet group

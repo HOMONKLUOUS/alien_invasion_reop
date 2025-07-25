@@ -81,7 +81,15 @@ class AlienInvation:
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
         if collisions:
-            self.state.score += self.settings.aliens_points
+            '''
+            In this part of code until now maybe can't calculate the truly score of player
+            mybe is because of i don't any limit on firing bullets
+            but don't be mad i solve this problem by collisions
+            collision work like a dictionary and in my program the value of this dic is list of aliens that 
+            remove sooo i just multiply this line to len of the aliens
+            '''
+            for aliens in collisions.values():
+                self.state.score += self.settings.aliens_points * len(aliens)
             self.SB.prep_score()
 
         if not self.aliens:

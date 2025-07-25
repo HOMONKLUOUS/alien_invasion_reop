@@ -24,6 +24,10 @@ class Setting:
 
         self.ship_limit = 3
 
+        # more point when you level up
+
+        self.score_scale = 1.5
+
         # leveling up with by speeding up
 
         self.speedup = 1.1
@@ -39,4 +43,6 @@ class Setting:
     def increase_speed(self):
         self.ship_speed *= self.speedup
         self.alien_speed *= self.speedup
+
+        self.aliens_points = int(self.aliens_points * self.score_scale)
         

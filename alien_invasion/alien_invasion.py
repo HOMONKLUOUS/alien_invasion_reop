@@ -7,6 +7,7 @@ from SpaceShip import SpaceShipAlien
 from bullet import Bullets
 from alien import Aliens
 from button import Button
+from scoreboard import Scoreboard
 
 class AlienInvation:
     def __init__(self):
@@ -35,6 +36,10 @@ class AlienInvation:
         # Button
 
         self.play_button = Button(self, 'play')
+
+        # scoreboard
+
+        self.SB = Scoreboard(self)
 
         # check the game over
 
@@ -75,10 +80,13 @@ class AlienInvation:
         '''
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
+        if collisions:
+            self.state.score += self.settings.aliens_points
+            self.SB.prep_score()
+
         if not self.aliens:
             self.bullets.empty()
-            self._creat_fleet(
-                )
+            self._creat_fleet()
             # for levelup
             self.settings.increase_speed()
     '''
@@ -147,6 +155,8 @@ class AlienInvation:
             pygame.mouse.set_visible(False)
             # Reset the game settings.
             self.settings.initialize_dynamic_setting()
+            # reset the game score
+            self.SB.prep_score()
 
 
     def _check_keyup_event(self, events):
@@ -171,6 +181,9 @@ class AlienInvation:
 
             # Reset the game settings.
             self.settings.initialize_dynamic_setting()
+
+            #reset the game score
+            self.SB.prep_score()
 
             #make mouse hide
             if self.game_active:
@@ -246,6 +259,8 @@ class AlienInvation:
         self.SpaceShip.blitme()
         # showing the aliens spaceship in the screen
         self.aliens.draw(self.screen)
+        # show the score information
+        self.SB.show_score()
         # draw the play button if the game is inactive
         if not self.game_active:
             self.play_button.draw_button()

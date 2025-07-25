@@ -33,6 +33,8 @@ class Setting:
         self.ship_speed = 2
         self.alien_speed = 2
         self.fleet_direction = 1
+        # scoring setting
+        self.aliens_points = 50
 
     def increase_speed(self):
         self.ship_speed *= self.speedup

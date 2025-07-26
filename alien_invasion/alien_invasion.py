@@ -6,6 +6,8 @@ from setting import Setting
 from SpaceShip import SpaceShipAlien
 from bullet import Bullets
 from alien import Aliens
+from button import Button
+from scoreboard import Scoreboard
 
 class AlienInvation:
     def __init__(self):
@@ -31,32 +33,41 @@ class AlienInvation:
         self.aliens = pygame.sprite.Group()
         self.state = GameState(self)
 
+        # Button
+
+        self.play_button = Button(self, 'play')
+
+        # scoreboard
+
+        self.SB = Scoreboard(self)
+
         # check the game over
 
-        self.game_active = True
+        self.game_active = False
 
         self._creat_fleet()
 
     def run_game(self):
         while True:
-            if self.game_active == False:
-                sys.exit()
             self._check_events()
-            self.SpaceShip.Update()
-            self.bullets.update()
-            # removing bullet that rech the top of the screen 
-            for bullet in self.bullets.copy():
-                '''
-                when we use list in for loop python expect that list will stay the same lenght
-                in that case we have to make copy of out list of bullets
-                '''
-                self._bullet_update()
-                if bullet.rect.bottom <= 0:
-                    self.bullets.remove(bullet)
+
+            if self.game_active:
+                self._check_events()
+                self.SpaceShip.Update()
+                self.bullets.update()
+                # removing bullet that rech the top of the screen 
+                for bullet in self.bullets.copy():
+                    '''
+                    when we use list in for loop python expect that list will stay the same lenght
+                    in that case we have to make copy of out list of bullets
+                    '''
+                    self._bullet_update()
+                    if bullet.rect.bottom <= 0:
+                        self.bullets.remove(bullet)
                     '''
                     we check how many bullets exist currently in the game and thay really dispeareed!
                     '''
-            self._update_alien()
+                self._update_alien()
             self._update_screen()
             # it make loop to count 60 times per soccend <framerate: 60>
             self.clock.tick(60)
@@ -69,10 +80,24 @@ class AlienInvation:
         '''
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
+        if collisions:
+            '''
+            In this part of code until now maybe can't calculate the truly score of player
+            mybe is because of i don't any limit on firing bullets
+            but don't be mad i solve this problem by collisions
+            collision work like a dictionary and in my program the value of this dic is list of aliens that 
+            remove sooo i just multiply this line to len of the aliens
+            '''
+            for aliens in collisions.values():
+                self.state.score += self.settings.aliens_points * len(aliens)
+            self.SB.prep_score()
+            self.SB.check_high_score()
+
         if not self.aliens:
             self.bullets.empty()
-            self._creat_fleet(
-                )
+            self._creat_fleet()
+            # for levelup
+            self.settings.increase_speed()
     '''
     For each alien with check_edge method in aliens.py file check if they in adge of the screen
     that call the change_fleet_direction which is in this file this method change the settings.fleet_direction
@@ -101,6 +126,11 @@ class AlienInvation:
             if events.type == pygame.KEYUP:
                 self._check_keyup_event(events)
 
+            # check the button paly
+            if events.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
+
 
     def _check_keydown_event(self, events):
         if events.key == pygame.K_RIGHT:
@@ -118,11 +148,57 @@ class AlienInvation:
         if events.key == pygame.K_SPACE:
             self._fire_bullets()
 
+        '''
+        we hide the mouse on the screen after the first time the player press the start button
+        of course we can fix this with just if condition and will that but just think it be better
+        if the player can start the game and play the game with just using a keyboard
+        '''
+        if events.key == pygame.K_s and not self.game_active:
+            self.state.reset_state()
+            self.game_active = True
+            self.aliens.empty()
+            self.bullets.empty()
+            self._creat_fleet()
+            self.SpaceShip.center_ship()
+            # attention that if we start the game with the keyboeard the mouse will not hide so for that:
+            pygame.mouse.set_visible(False)
+            # Reset the game settings.
+            self.settings.initialize_dynamic_setting()
+            # reset the game score
+            self.SB.prep_score()
+
+
     def _check_keyup_event(self, events):
         if events.key == pygame.K_RIGHT:
             self.SpaceShip.moving_right = False
         if events.key == pygame.K_LEFT:
             self.SpaceShip.moving_left = False
+
+    def _check_play_button(self, mouse_pos):
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_active:
+            self.state.reset_state()
+            self.game_active = True
+            '''
+            we need to reset the game when press the play button like when you lose!
+            '''
+            self.aliens.empty()
+            self.bullets.empty()
+
+            self._creat_fleet()
+            self.SpaceShip.center_ship()
+
+            # Reset the game settings.
+            self.settings.initialize_dynamic_setting()
+
+            #reset the game score
+            self.SB.prep_score()
+
+            #make mouse hide
+            if self.game_active:
+                pygame.mouse.set_visible(False)
+            else:
+                pygame.mouse.set_visible(True)
 
     def _fire_bullets(self):
         # creat a new bullet and addet to the bullet group
@@ -192,6 +268,11 @@ class AlienInvation:
         self.SpaceShip.blitme()
         # showing the aliens spaceship in the screen
         self.aliens.draw(self.screen)
+        # show the score information
+        self.SB.show_score()
+        # draw the play button if the game is inactive
+        if not self.game_active:
+            self.play_button.draw_button()
         pygame.display.flip()
 
 if __name__ == '__main__':

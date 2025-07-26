@@ -18,14 +18,31 @@ class Setting:
 
         # aliens_setting
 
-        self.alien_speed = 2.0
         self.flet_spped_drop = 10
 
-        # Direction 1 is represent right and direction -1 represent left
-
-        self.fleet_direction = 1
-
-        # shipes limit
+        # shape limit
 
         self.ship_limit = 3
 
+        # more point when you level up
+
+        self.score_scale = 1.5
+
+        # leveling up with by speeding up
+
+        self.speedup = 1.1
+        self.initialize_dynamic_setting()
+
+    def initialize_dynamic_setting(self):
+        self.ship_speed = 2
+        self.alien_speed = 2
+        self.fleet_direction = 1
+        # scoring setting
+        self.aliens_points = 50
+
+    def increase_speed(self):
+        self.ship_speed *= self.speedup
+        self.alien_speed *= self.speedup
+
+        self.aliens_points = int(self.aliens_points * self.score_scale)
+        

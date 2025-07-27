@@ -8,6 +8,7 @@ class SpaceShipAlien(Sprite):
         self.screen_rect = ai_game.screen.get_rect()
         self.settings = ai_game.settings
 
+
         #load the ship image
         self.image = pygame.image.load('aliens_game/space_ship/spiked ship 3. small.blue_.PNG')
         self.rect = self.image.get_rect()
@@ -39,3 +40,4 @@ class SpaceShipAlien(Sprite):
     def blitme(self):
         #draw the schip at the current location
         self.screen.blit(self.image, self.rect)
+

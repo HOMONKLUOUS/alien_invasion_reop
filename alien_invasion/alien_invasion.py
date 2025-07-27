@@ -124,7 +124,7 @@ class AlienInvation:
                 self._check_keydown_event(events)
 
             if events.type == pygame.KEYUP:
-                self._check_keyup_event(events)
+                self._check_keyup_event(events) 
 
             # check the button paly
             if events.type == pygame.MOUSEBUTTONDOWN:
